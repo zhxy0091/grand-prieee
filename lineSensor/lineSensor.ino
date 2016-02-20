@@ -81,13 +81,8 @@ void loop() {
     int val = analogRead(A0);
     delay(2);  
                                                               
-    if(val>threshold) {
-      PixelArray[i] = 1;
-    }
-    else {
-      PixelArray[i] = 0;
-    }
-    //PixelArray[i] = analogRead(A0);                                                                                                        
+    
+    PixelArray[i] = analogRead(A0);                                                                                                        
     digitalWrite(CLK, HIGH);                                          
                                                                   
     digitalWrite(CLK, LOW);                                      
@@ -106,3 +101,13 @@ void loop() {
   
 
 }         // END
+
+void doThreshold(int val) {
+  if(val>threshold) {
+      PixelArray[i] = 1;
+    }
+    else {
+      PixelArray[i] = 0;
+    }
+}
+

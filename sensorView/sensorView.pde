@@ -63,8 +63,8 @@ float  [] PixelArray = new float[128] ;
  
  for(i = 0; i < 128; i ++){
   
-  //PixelArray[i] = map(colors[i], 0, 1023, 0, 255);
-   PixelArray[i] = colors[i] *255;
+  PixelArray[i] = map(colors[i], 0, 1023, 0, 255);
+   //PixelArray[i] = colors[i] *255;
  }
  
  
