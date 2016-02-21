@@ -102,6 +102,9 @@ void loop() {
 
 }         // END
 
+/*threshold the input analog signal from line sensor
+  to 1(white) and 0(black)
+  */
 void doThreshold(int val) {
   if(val>threshold) {
       PixelArray[i] = 1;
