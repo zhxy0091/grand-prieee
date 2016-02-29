@@ -4,7 +4,7 @@
 Servo myservo;  // create servo object to control a servo
 // twelve servo objects can be created on most boards
 
-const int MID = 112; //MID point is 112 degree
+const int MID = 125; //MID point is 112 degree
 //variables to store the servo position
 int start = 0;  
 int endpoint = 0;
@@ -47,6 +47,6 @@ void loop() {
   start = pos;
   Serial.println();
   Serial.println("Turning right");
-  
+  int position = (int)sensorAvg/sensorSum;
 }
 

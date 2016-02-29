@@ -9,7 +9,7 @@ const int MID = 125; //MID point for servo is 112 degree
 const int RIGHT = MID+40;
 const int LEFT = MID-40;
 
-const int MID_POSTION = 64; //mid postion is mid index of 128 sized array
+const int MID_POSITION = 64; //mid postion is mid index of 128 sized array
 
 int PixelArray[128] ;            // Pixel array.
 
@@ -25,9 +25,8 @@ int threshold = 1000;
 
 int sensorSum = 0;
 int sensorAvg = 0;
-
-int prevPosition = MID_POSTION;
-int position;
+int prevPosition = MID_POSITION;
+int position = MID_POSITION;
 void setup() {
   
   myservo.attach(9);  //connect signal to pin 9
@@ -106,14 +105,21 @@ void loop() {
     sensorAvg += PixelArray[i] * i;
     
     
-    // PixelArray[i] = val;                                                                                                        
+   // PixelArray[i] = val;                                                                                                        
     digitalWrite(CLK, HIGH);                                          
                                                                   
     digitalWrite(CLK, LOW);                                      
   }
-w
- // turnWheel(position);
- // delay(20);
+  if(sensorSum == 0) {
+    position = prevPosition;
+  }
+  else {
+    position = (int)sensorAvg/sensorSum;
+    prevPosition = position;
+  }
+  Serial.println(position);
+  turnWheel(position);
+  //delay(20);
   
 //send data to computer and processing
   for(i = 0; i < 128; i ++){          
@@ -135,13 +141,13 @@ int doThreshold(int val) {
   if(val>threshold) {
       return 1;
     }
-    else {
+  else {
       return 0;
     }
 }
 
 void turnWheel(int position) {
-  int degree = map(position, 0, 127, RIGHT, LEFT);
+  int degree = map(position, 0, 127, LEFT, RIGHT);
   Serial.println("turn degree: "+degree);
   myservo.write(degree);
 }
