@@ -97,7 +97,7 @@ void loop() {
                                                             
    //  set threshold     
     int val = analogRead(A0);
-    delay(2);  
+    //delay(2);  
                                                               
     PixelArray[i] = doThreshold(val);
     

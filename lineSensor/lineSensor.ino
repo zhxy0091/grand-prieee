@@ -1,15 +1,4 @@
 
-#include <Servo.h>
-
-Servo myservo;  // create servo object to control a servo
-// twelve servo objects can be created on most boards
-
-//degree limits for servo
-const int MID = 125; //MID point for servo is 112 degree
-const int RIGHT = MID+40;
-const int LEFT = MID-40;
-
-const int MID_POSTION = 64; //mid postion is mid index of 128 sized array
 
 int PixelArray[128] ;            // Pixel array.
 
@@ -23,16 +12,7 @@ int sensorValue = 0;             // sensor for saturation time.
 
 int threshold = 1000;
 
-int sensorSum = 0;
-int sensorAvg = 0;
-
-int prevPosition = MID_POSTION;
-int position;
 void setup() {
-  
-  myservo.attach(9);  //connect signal to pin 9
-  // initialize position to mid
-  myservo.write(MID);
   
   pinMode(CLK, OUTPUT);          // Set CLK as output.
   
@@ -69,13 +49,7 @@ void setup() {
 
 
 void loop() {
-  
-  
-  sensorAvg = 0;
-  sensorSum = 0; 
- //sensorValue = analogRead(A1);   // Get value for saturation time.
-  
-  
+
   
 //starts pixel count
                                
@@ -98,23 +72,18 @@ void loop() {
                                                             
    //  set threshold     
     int val = analogRead(A0);
-    delay(2);  
+    //delay(2);  
                                                               
-    PixelArray[i] = doThreshold(val);
-    
-    sensorSum += PixelArray[i];
-    sensorAvg += PixelArray[i] * i;
+   // PixelArray[i] = doThreshold(val);
     
     
-    // PixelArray[i] = val;                                                                                                        
+    PixelArray[i] = val;                                                                                                        
     digitalWrite(CLK, HIGH);                                          
                                                                   
     digitalWrite(CLK, LOW);                                      
   }
-w
- // turnWheel(position);
- // delay(20);
-  
+
+
 //send data to computer and processing
   for(i = 0; i < 128; i ++){          
     //Serial.write(PixelArray[i]);
@@ -138,11 +107,5 @@ int doThreshold(int val) {
     else {
       return 0;
     }
-}
-
-void turnWheel(int position) {
-  int degree = map(position, 0, 127, RIGHT, LEFT);
-  Serial.println("turn degree: "+degree);
-  myservo.write(degree);
 }
 
