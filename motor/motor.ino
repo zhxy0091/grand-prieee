@@ -3,11 +3,11 @@ int motorPin = 9;
 void setup() {
    
  pinMode(motorPin, OUTPUT);
+ analogWrite(motorPin, 55);
 }
 void loop() {
- analogWrite(motorPin, 255);
- delay(6000); 
- analogWrite(motorPin, 5);
- delay(6000);
+ 
  
 }
+
+//void dutycycle(

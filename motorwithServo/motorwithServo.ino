@@ -9,18 +9,25 @@ const int MID = 130; //MID point is 112 degree
 int start = 0;  
 int endpoint = 0;
 int pos = 0;
-//int rightpoint = start+20;
-//int leftpoint = start-20;
+
+int motorPin = 9;
+int rightpoint;
+int leftpoint;
+
 void setup() {
   myservo.attach(10);  //connect signal to pin 9
+  pinMode(motorPin, OUTPUT);
   /*leftpoint = myservo.read();
   Serial.print(leftpoint);*/
   // initialize position to mid
   myservo.write(MID);
+  analogWrite(motorPin, 55);
   start = MID;
   //set range between MID+40 and MID-40
   rightpoint = start+40;
   leftpoint = start-40;
+  
+  
   Serial.begin(9600);
   Serial.print("The start degree is: " + start);
   
@@ -28,7 +35,6 @@ void setup() {
 }
 
 void loop() {
-  
   for (pos=start; pos <= rightpoint; pos += 1) { // goes from 0 degrees to 180 degrees
     // in steps of 1 degree
     myservo.write(pos);   // tell servo to go to position in variable 'pos'
