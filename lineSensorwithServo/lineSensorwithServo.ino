@@ -17,6 +17,8 @@ int CLK = 13;                    // Set pin as CLK.
 
 int SI  = 12;                    // Set pin as SI.
 
+int motorPin = 9;                // Set pin as motor
+
 int i   =  0;                    // For pixel count.
 
 int sensorValue = 0;             // sensor for saturation time.
@@ -29,10 +31,11 @@ int prevPosition = MID_POSITION;
 int position = MID_POSITION;
 void setup() {
   
-  myservo.attach(9);  //connect signal to pin 9
+  myservo.attach(10);  //connect signal to pin 9
   // initialize position to mid
   myservo.write(MID);
-  
+
+  analogWrite(motorPin, 55); //write speed to motor (0~255)
   pinMode(CLK, OUTPUT);          // Set CLK as output.
   
   pinMode(SI, OUTPUT);           // Set SI as  output.

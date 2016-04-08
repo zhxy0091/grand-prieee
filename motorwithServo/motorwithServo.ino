@@ -15,13 +15,13 @@ int rightpoint;
 int leftpoint;
 
 void setup() {
-  myservo.attach(10);  //connect signal to pin 9
   pinMode(motorPin, OUTPUT);
   /*leftpoint = myservo.read();
   Serial.print(leftpoint);*/
   // initialize position to mid
+  myservo.attach(10);  //connect signal to pin 9
   myservo.write(MID);
-  analogWrite(motorPin, 55);
+  
   start = MID;
   //set range between MID+40 and MID-40
   rightpoint = start+40;
@@ -35,6 +35,7 @@ void setup() {
 }
 
 void loop() {
+  analogWrite(motorPin, 55);
   for (pos=start; pos <= rightpoint; pos += 1) { // goes from 0 degrees to 180 degrees
     // in steps of 1 degree
     myservo.write(pos);   // tell servo to go to position in variable 'pos'
