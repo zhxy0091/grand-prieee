@@ -30,15 +30,16 @@ int sensorAvg = 0;
 int prevPosition = MID_POSITION;
 int position = MID_POSITION;
 void setup() {
+  pinMode(CLK, OUTPUT);          // Set CLK as output.
+  
+  pinMode(SI, OUTPUT);           // Set SI as  output.
   
   myservo.attach(10);  //connect signal to pin 9
   // initialize position to mid
   myservo.write(MID);
 
   analogWrite(motorPin, 55); //write speed to motor (0~255)
-  pinMode(CLK, OUTPUT);          // Set CLK as output.
   
-  pinMode(SI, OUTPUT);           // Set SI as  output.
   
   Serial.begin(9600);
   

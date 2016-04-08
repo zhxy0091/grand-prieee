@@ -1,11 +1,12 @@
+
 #include <Servo.h>
 
 Servo myservo;  // create servo object to control a servo
 
 //degree limits for servo
-const int SERVO_MID = 125; //MID point for servo
-const int SERVO_RIGHT = SERVO_MID+30;
-const int SERVO_LEFT = SERVO_MID-30;
+const int SERVO_MID = 125; //MID point for servo is 112 degree
+const int SERVO_RIGHT = SERVO_MID+40;
+const int SERVO_LEFT = SERVO_MID-40;
 
 //position of cars
 const int MID_POSITION = 64; //mid postion is mid index of 128 sized array
@@ -13,7 +14,7 @@ int prevPosition = MID_POSITION;
 int curPosition = MID_POSITION;
 
 //motor duty range: 0~100
-const int MAX_DUTY = 30;
+const int MAX_DUTY = 50;
 const int MIN_DUTY = 20;
 
 int pixelArray[128] ;            // Pixel array.
@@ -31,6 +32,7 @@ void setup() {
   myservo.attach(SERVO_PIN);  //connect signal to pin 9
   myservo.write(SERVO_MID);   //initialize position to mid
 
+  //analogWrite(motorPin, 55); //write speed to motor (0~255)
 
   Serial.begin(9600);
   
@@ -63,19 +65,9 @@ void loop() {
     digitalWrite(CLK, HIGH);                                       
     digitalWrite(CLK, LOW);                                      
   }
-  /*
-  //print pixelArray 
-  for(int i = 0; i < 128; i ++){          
-    //Serial.write(PixelArray[i]);
-    
-    Serial.print(pixelArray[i]);
-    Serial.print(","); 
-  }
-  Serial.println(",");   
-  //end print
-  */
+
   findPosition(pixelArray);
-  //Serial.println(curPosition);
+  Serial.println(curPosition);
   int degree = map(curPosition, 0, 127, SERVO_LEFT, SERVO_RIGHT);
   turnWheel(degree);
   //offValue is how much the car is off the center
@@ -83,11 +75,28 @@ void loop() {
   if(offValue<0) {
      offValue = -offValue;
   }
-  int motorDuty = map(offValue, 0, 64, MAX_DUTY, MIN_DUTY); //dynamically adjust the speed
+  if(offValue>30) {
+    int speed = motorPWM(20);
+    analogWrite(MOTOR_PIN, speed);
+  }
+  else {
+    int speed = motorPWM(40);
+    analogWrite(MOTOR_PIN, speed);
+  }
+ /* int motorDuty = map(offValue, 0, 64, MAX_DUTY, MIN_DUTY);
   int speed = motorPWM(motorDuty);
   analogWrite(MOTOR_PIN, speed);
+*/
+  /*
+  //send data to computer and processing
+  for(int i = 0; i < 128; i ++){          
+    //Serial.write(PixelArray[i]);
 
-  
+    Serial.print(PixelArray[i]);
+    Serial.print(","); 
+  }
+  Serial.println(",");                                                              
+  */
 
 
 }       
@@ -96,10 +105,8 @@ void loop() {
 void findPosition(int* pixelArray) {
    int sensorSum = 0;
    int sensorAvg = 0;
-   int threshold = findThreshold(pixelArray);
-   Serial.println(threshold);
    for(int i = 0; i < 128; i++) { 
-      int afterThreshold = doThreshold(pixelArray[i], threshold);
+      int afterThreshold = doThreshold(pixelArray[i]);
       sensorSum += afterThreshold;
       sensorAvg += afterThreshold * i;
    }
@@ -129,8 +136,8 @@ int motorPWM(int motorDuty) {
 /*threshold the input analog signal from line sensor
   to 1(white) and 0(black)
  */
-int doThreshold(int val, int threshold) {
-  //int threshold = findThreshold(pixelArray);
+int doThreshold(int val) {
+  int threshold = findThreshold(pixelArray);
   if(val>threshold) {
     return 1;
   }
@@ -142,25 +149,24 @@ int doThreshold(int val, int threshold) {
 /* Find the best threshold to determine the location of the line
  */
 int findThreshold(int* pixelArray) {
-  long average = 0;
+  int average = 0;
   int maximum = 0;
 
   for(int i = 0; i < 128; i++) {
     average = average + pixelArray[i];
-    if(pixelArray[i] > maximum) {
+    if(pixelArray[i] > maximum)
+    {
       maximum = pixelArray[i];
     }
   }
-  Serial.println(average);
   average = average/128;
-  
+
   //Adaptive threshold
   int offset = adaptThresOffset(maximum, average);
-  
   offset = offset + average;
 
   //Static threshold (THRES_OFFSET varies)
-  //offset = 1000;
+  //int offset = 1000;
 
   return offset;
 }
@@ -170,6 +176,6 @@ int findThreshold(int* pixelArray) {
  */
 int adaptThresOffset(int maximum, int average)
 {
-  return ((maximum - average)/2);
+  return ((maximum - average)/2)-1;
 }
 

@@ -10,7 +10,7 @@ int start = 0;
 int endpoint = 0;
 int pos = 0;
 
-int motorPin = 9;
+int motorPin = 6;
 int rightpoint;
 int leftpoint;
 
@@ -21,7 +21,7 @@ void setup() {
   // initialize position to mid
   myservo.attach(10);  //connect signal to pin 9
   myservo.write(MID);
-  
+  analogWrite(motorPin, 80);
   start = MID;
   //set range between MID+40 and MID-40
   rightpoint = start+40;
@@ -35,10 +35,11 @@ void setup() {
 }
 
 void loop() {
-  analogWrite(motorPin, 55);
+  
   for (pos=start; pos <= rightpoint; pos += 1) { // goes from 0 degrees to 180 degrees
     // in steps of 1 degree
     myservo.write(pos);   // tell servo to go to position in variable 'pos'
+    
     Serial.print(pos);
     Serial.print(",");
     delay(20);                       // waits 15ms for the servo to reach the position
@@ -47,6 +48,7 @@ void loop() {
   Serial.println("Turning left: ");
   for (pos=rightpoint; pos >= leftpoint; pos -= 1) { // goes from 180 degrees to 0 degrees
     myservo.write(pos);
+    
     Serial.print(pos);
     Serial.print(",");// tell servo to go to position in variable 'pos'
     delay(20);                       // waits 15ms for the servo to reach the position

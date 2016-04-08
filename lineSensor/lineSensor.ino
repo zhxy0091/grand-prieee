@@ -50,7 +50,7 @@ void setup() {
 
 void loop() {
 
-  
+  delayMicroseconds(10000);
 //starts pixel count
                                
  digitalWrite(SI, HIGH);       
