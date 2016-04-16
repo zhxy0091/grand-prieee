@@ -7,6 +7,10 @@ const int SERVO_MID = 125; //MID point for servo
 const int SERVO_RIGHT = SERVO_MID+30;
 const int SERVO_LEFT = SERVO_MID-30;
 
+//Lock mechanism for servo
+boolean leftLock = false;
+boolean rightLock = false;
+
 //position of cars
 const int MID_POSITION = 64; //mid postion is mid index of 128 sized array
 int prevPosition = MID_POSITION;
@@ -76,8 +80,30 @@ void loop() {
   */
   findPosition(pixelArray);
   Serial.println(curPosition);
+  //Lock mechanism to deal with case if totally off the track
+  if(100<curPosition && curPosition<110 && rightLock == true) {
+    rightLock = false;
+  }
+  else if(20<curPosition && curPosition<30 && leftLock == true) {
+    leftLock = false;
+  }
+  if(curPosition > 115) {
+    rightLock = true;
+  }
+  else if(curPosition < 12) {
+    leftLock = true;
+  }
   
-  int degree = map(curPosition, 0, 127, SERVO_LEFT, SERVO_RIGHT);
+  int degree = 0;
+  if(rightLock) {
+    degree = SERVO_RIGHT;
+  }
+  else if(leftLock) {
+    degree = SERVO_LEFT;
+  }
+  else {
+    degree = map(curPosition, 0, 127, SERVO_LEFT, SERVO_RIGHT);
+  }
   turnWheel(degree);
   //offValue is how much the car is off the center
   int offValue = curPosition-MID_POSITION;
@@ -86,7 +112,7 @@ void loop() {
   }
   int motorDuty = map(offValue, 0, 64, MAX_DUTY, MIN_DUTY); //dynamically adjust the speed
   int speed = motorPWM(motorDuty);
-  analogWrite(MOTOR_PIN, speed);
+  //analogWrite(MOTOR_PIN, speed);
 
   
 
@@ -105,14 +131,10 @@ void findPosition(int* pixelArray) {
       sensorAvg += afterThreshold * i;
    }
    //Serial.println(sensorSum);
-   //if all black, means off the track
-   if(sensorSum == 0) {
-      curPosition = prevPosition;
-   }
-   else {
-      curPosition = (int)sensorAvg/sensorSum;
-      prevPosition = curPosition;
-  }
+   curPosition = (int)sensorAvg/sensorSum;
+   
+   prevPosition = curPosition;
+  
 }
 
 /* Steer wheel by certain degree based on the position of the car

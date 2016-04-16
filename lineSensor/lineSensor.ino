@@ -1,5 +1,3 @@
-
-
 int PixelArray[128] ;            // Pixel array.
 
 int CLK = 13;                    // Set pin as CLK.
@@ -10,9 +8,12 @@ int i   =  0;                    // For pixel count.
 
 int sensorValue = 0;             // sensor for saturation time.
 
-int threshold = 1000;
+int threshold = 800;
+
+
 
 void setup() {
+  
   
   pinMode(CLK, OUTPUT);          // Set CLK as output.
   
@@ -49,10 +50,15 @@ void setup() {
 
 
 void loop() {
-
-  delayMicroseconds(10000);
+  
+  
+  
+ //sensorValue = analogRead(A1);   // Get value for saturation time.
+  
+  
+  
 //starts pixel count
-                               
+delayMicroseconds(10000);   
  digitalWrite(SI, HIGH);       
                               
  digitalWrite(CLK, HIGH);      
@@ -63,27 +69,25 @@ void loop() {
           
   
   
-/*Pixel count and read
-  set threshold
-  value above threshold(white) is 1
-  below is 0
-  */                                                         
+//Pixel count and read
+//set threshold
+//value above threshold(white) is 1
+//below is 0
+                                                                 
   for(i = 0; i < 128; i++){                                     
                                                             
    //  set threshold     
     int val = analogRead(A0);
     //delay(2);  
                                                               
-   // PixelArray[i] = doThreshold(val);
     
-    
-    PixelArray[i] = val;                                                                                                        
+    PixelArray[i] = analogRead(A0);                                                                                                        
     digitalWrite(CLK, HIGH);                                          
                                                                   
     digitalWrite(CLK, LOW);                                      
   }
-
-
+  
+  
 //send data to computer and processing
   for(i = 0; i < 128; i ++){          
     //Serial.write(PixelArray[i]);
@@ -92,7 +96,7 @@ void loop() {
     Serial.print(","); 
   }
   Serial.println(",");                                                              
- 
+  
   
 
 }         // END
@@ -100,12 +104,11 @@ void loop() {
 /*threshold the input analog signal from line sensor
   to 1(white) and 0(black)
   */
-int doThreshold(int val) {
+void doThreshold(int val) {
   if(val>threshold) {
-      return 1;
+      PixelArray[i] = 1;
     }
     else {
-      return 0;
+      PixelArray[i] = 0;
     }
 }
-
