@@ -83,7 +83,7 @@ void loop() {
   //end print
   */
   findPosition(pixelArray);
-  //Serial.println(curPosition);
+  Serial.println(curPosition);
   //Lock mechanism to deal with case if totally off the track
   Serial.println(pixelArray[curPosition]);
   /*
@@ -100,16 +100,16 @@ void loop() {
     leftLock = true;
   }
   */
-  if(pixelArray[curPosition] > 160  && rightLock == true) {
+  if(pixelArray[curPosition] > 200  && rightLock == true) {
     rightLock = false;
   }
-  else if(pixelArray[curPosition] > 160 && leftLock == true) {
+  else if(pixelArray[curPosition] > 200 && leftLock == true) {
     leftLock = false;
   }
-  if(curPosition > 113) {
+  if(curPosition > 95) {
     rightLock = true;
   }
-  else if(curPosition < 15) {
+  else if(curPosition < 35) {
     leftLock = true;
   }
   int degree = 0;
@@ -120,7 +120,7 @@ void loop() {
     degree = SERVO_LEFT;
   }
   else {
-    degree = map(curPosition, 0, 127, SERVO_LEFT, SERVO_RIGHT);
+    degree = map(curPosition, 35, 95, SERVO_LEFT, SERVO_RIGHT);
   }
   turnWheel(degree);
   //offValue is how much the car is off the center
