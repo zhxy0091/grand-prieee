@@ -1,24 +1,30 @@
 #include <Servo.h>
+#include <PID_v1.h>
 
 Servo myservo;  // create servo object to control a servo
 
 //degree limits for servo
-const int SERVO_MID = 120; //MID point for servo
-const int SERVO_RIGHT = SERVO_MID+40;
-const int SERVO_LEFT = SERVO_MID-40;
-
-//Lock mechanism for servo
-boolean leftLock = false;
-boolean rightLock = false;
+const int SERVO_MID = 125; //MID point for servo
+const int SERVO_RIGHT = SERVO_MID+30;
+const int SERVO_LEFT = SERVO_MID-30;
 
 //position of cars
 const int MID_POSITION = 64; //mid postion is mid index of 128 sized array
 int prevPosition = MID_POSITION;
 int curPosition = MID_POSITION;
 
+//PID
+double input;
+double output;
+double setPoint = MID_POSITION;
+double kp = 2;
+double ki = 5;
+double kd = 1;
+PID myPID(&input, &output, &setPoint, kp, ki, kd, DIRECT);
+
 //motor duty range: 0~100
-const int MAX_DUTY = 40;
-const int MIN_DUTY = 30;
+const int MAX_DUTY = 30;
+const int MIN_DUTY = 20;
 
 int pixelArray[128] ;            // Pixel array.
 
@@ -28,17 +34,15 @@ int MOTOR_PIN = 6;                // Set pin 9 as motor
 int SERVO_PIN =10;                //Set pin 10 as servo
 
 void setup() {
-  leftLock = false;
-  rightLock = false;
-  
   pinMode(CLK, OUTPUT);          // Set CLK as output.
   pinMode(SI, OUTPUT);           // Set SI as  output.
   pinMode(MOTOR_PIN, OUTPUT);    // Set MOTOR_PIN as output.
-  
+
   myservo.attach(SERVO_PIN);  //connect signal to pin 9
   myservo.write(SERVO_MID);   //initialize position to mid
 
-
+  
+  
   Serial.begin(9600);
   
   digitalWrite(SI, HIGH);    
@@ -51,7 +55,6 @@ void setup() {
     digitalWrite(CLK, HIGH);                                                                                
     digitalWrite(CLK, LOW);                                                       
   }                                    
-
   
 }
 
@@ -83,45 +86,9 @@ void loop() {
   //end print
   */
   findPosition(pixelArray);
-  //Serial.println(curPosition);
-  //Lock mechanism to deal with case if totally off the track
-  Serial.println(pixelArray[curPosition]);
-  /*
-  if(105<curPosition && curPosition<112 && rightLock == true) {
-    rightLock = false;
-  }
-  else if(20<curPosition && curPosition<30 && leftLock == true) {
-    leftLock = false;
-  }
-  if(curPosition > 113) {
-    rightLock = true;
-  }
-  else if(curPosition < 15) {
-    leftLock = true;
-  }
-  */
-  if(pixelArray[curPosition] > 160  && rightLock == true) {
-    rightLock = false;
-  }
-  else if(pixelArray[curPosition] > 160 && leftLock == true) {
-    leftLock = false;
-  }
-  if(curPosition > 113) {
-    rightLock = true;
-  }
-  else if(curPosition < 15) {
-    leftLock = true;
-  }
-  int degree = 0;
-  if(rightLock) {
-    degree = SERVO_RIGHT;
-  }
-  else if(leftLock) {
-    degree = SERVO_LEFT;
-  }
-  else {
-    degree = map(curPosition, 0, 127, SERVO_LEFT, SERVO_RIGHT);
-  }
+  Serial.println(curPosition);
+  
+  int degree = map(curPosition, 0, 127, SERVO_LEFT, SERVO_RIGHT);
   turnWheel(degree);
   //offValue is how much the car is off the center
   int offValue = curPosition-MID_POSITION;
@@ -149,10 +116,14 @@ void findPosition(int* pixelArray) {
       sensorAvg += afterThreshold * i;
    }
    //Serial.println(sensorSum);
-   curPosition = (int)sensorAvg/sensorSum;
-   
-   prevPosition = curPosition;
-  
+   //if all black, means off the track
+   if(sensorSum == 0) {
+      curPosition = prevPosition;
+   }
+   else {
+      curPosition = (int)sensorAvg/sensorSum;
+      prevPosition = curPosition;
+  }
 }
 
 /* Steer wheel by certain degree based on the position of the car

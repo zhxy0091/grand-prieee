@@ -86,7 +86,7 @@ void loop() {
   }
   int motorDuty = map(offValue, 0, 64, MAX_DUTY, MIN_DUTY); //dynamically adjust the speed
   int speed = motorPWM(motorDuty);
-  analogWrite(MOTOR_PIN, speed);
+  //analogWrite(MOTOR_PIN, speed);
 
   
 

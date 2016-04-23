@@ -87,15 +87,15 @@ delayMicroseconds(10000);
     digitalWrite(CLK, LOW);                                      
   }
   
-  
+  long sum=0;
 //send data to computer and processing
   for(i = 0; i < 128; i ++){          
     //Serial.write(PixelArray[i]);
     
-    Serial.print(PixelArray[i]);
-    Serial.print(","); 
+    sum += PixelArray[i];
+    
   }
-  Serial.println(",");                                                              
+  Serial.println(sum/128);                                                             
   
   
 
