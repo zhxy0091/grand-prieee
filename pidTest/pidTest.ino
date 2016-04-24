@@ -9,7 +9,7 @@ PID myPID(&Input, &Output, &Setpoint,2,5,1, DIRECT);
 void setup()
 {
   //initialize the variables we're linked to
-  Input = 30;
+  Input = 60;
   Setpoint = 64;
 
   //turn the PID on
@@ -19,7 +19,7 @@ void setup()
 
 void loop()
 {
-  Input = 30;
+  Input = 60;
   myPID.Compute();
   Serial.println(Output);
 }

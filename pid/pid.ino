@@ -5,7 +5,7 @@ Servo myservo;  // create servo object to control a servo
 
 //degree limits for servo
 const int MAX_ANGLE = 40;
-const int SERVO_MID = 125; //MID point for servo
+const int SERVO_MID = 120; //MID point for servo
 const int SERVO_RIGHT = SERVO_MID+MAX_ANGLE;
 const int SERVO_LEFT = SERVO_MID-MAX_ANGLE;
 
@@ -22,15 +22,15 @@ int curPosition = MID_POSITION;
 double input;
 double output;
 double setPoint;
-double kp = 2;
-double ki = 5;
-double kd = 1;
+double kp = 5;
+double ki = 1;
+double kd = 0;
 PID myPID(&input, &output, &setPoint, kp, ki, kd, DIRECT);
 
 //motor duty range: 0~100
-const int MAX_DUTY = 40;
-const int MID_DUTY = 35;
-const int MIN_DUTY = 30;
+const int MAX_DUTY = 30;
+const int MID_DUTY = 25;
+const int MIN_DUTY = 20;
 
 int pixelArray[128] ;            // Pixel array.
 
@@ -50,7 +50,7 @@ void setup() {
   myservo.attach(SERVO_PIN);  //connect signal to pin 9
   myservo.write(SERVO_MID);   //initialize position to mid
 
-  input = curPosition;
+  //input = curPosition;
   setPoint = (double)MID_POSITION;
   myPID.SetMode(AUTOMATIC);
   myPID.SetOutputLimits(0,(double)MAX_ANGLE);
@@ -89,21 +89,27 @@ void loop() {
 
  
   findPosition(pixelArray);
-  Serial.println(curPosition);
-
-  if(pixelArray[curPosition] > 200  && curPosition< 90 && rightLock == true) {
+  input = (double)curPosition;
+  //Serial.print(curPosition);
+  //Serial.print(","); 
+  //Serial.print(pixelArray[curPosition]);
+  //Serial.print(",");
+  if(pixelArray[curPosition] > 160  && curPosition< 105 && rightLock == true) {
     rightLock = false;
   }
-  else if(pixelArray[curPosition] > 200 && curPosition > 30 && leftLock == true) {
+  else if(pixelArray[curPosition] > 160 && curPosition > 15 && leftLock == true) {
     leftLock = false;
   }
-  if(curPosition > 105) {
+  
+  if(curPosition > 110) {
     rightLock = true;
   }
-  else if(curPosition < 23) {
+  else if(curPosition < 10) {
     leftLock = true;
   }
   int degree = 0;
+  //input = (double)curPosition;
+  myPID.Compute();
   if(rightLock) {
     degree = SERVO_RIGHT;
   }
@@ -111,19 +117,21 @@ void loop() {
     degree = SERVO_LEFT;
   }
   else {
-    input = (double)curPosition;
-    myPID.Compute();
     degree = output;
+    
+    if(curPosition<64) {
+      degree = SERVO_MID-degree;
+    }
+    else {
+      degree = SERVO_MID+degree;
+    }
+    
   }
   Serial.println(degree);
   
-  //int degree = map(curPosition, 0, 127, SERVO_LEFT, SERVO_RIGHT);
-  if(curPosition<64) {
-    turnWheel(SERVO_MID-degree);
-  }
-  else {
-    turnWheel(SERVO_MID+degree);
-  }
+  //int degree = map(curPosition, 15, 105, SERVO_LEFT, SERVO_RIGHT);
+  turnWheel(degree);
+  
   
   //offValue is how much the car is off the center
   int offValue = curPosition-MID_POSITION;
